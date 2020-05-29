@@ -1,0 +1,28 @@
+#include <SoftwareSerial.h>
+
+const int LED=3;
+char data=0;
+
+SoftwareSerial BTSerial(11,12);
+
+void setup() {
+  Serial.begin(9600);
+  BTSerial.begin(9600);
+  pinMode(LED,OUTPUT);
+
+}
+
+void loop() {
+  if(BTSerial.available()){
+    data=BTSerial.read();
+    Serial.write(data);
+    switch(data)
+    {
+      case '1':digitalWrite(LED,HIGH); break;
+      case '0':digitalWrite(LED,LOW); break;
+    }
+  }
+  if(Serial.available())
+   BTSerial.write(Serial.read());
+  delay(1);
+}

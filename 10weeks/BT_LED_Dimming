@@ -1,0 +1,54 @@
+#include <SoftwareSerial.h>
+
+#define redPin 9
+#define greenPin 10
+#define bluePin 11
+
+String rgbValue = ""; // 스마트폰에서 아두이노로 넘어오는 값
+
+SoftwareSerial BTSerial(2, 3); // Connect HC-06. Use your (TX, RX) settings
+
+void setup() {
+  Serial.begin(9600);
+  BTSerial.begin(9600);
+ 
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+ 
+  analogWrite(redPin, 0);
+  analogWrite(greenPin, 0);
+  analogWrite(bluePin, 0);
+}
+
+void loop() {
+  if (BTSerial.available()) {
+    char rgbData = BTSerial.read();
+    if(rgbData == '\n') { // 문자열 수신 종료
+      Serial.print("RGB값 : ");
+      Serial.println(rgbValue);
+      if(rgbValue.length() > 1) {
+        int brightness = rgbValue.substring(1).toInt(); // 값 추출
+        switch(rgbValue[0]) { 
+        case 'R':
+          analogWrite(redPin, brightness);
+          Serial.print("RED : ");
+          Serial.println(brightness);
+          break;
+        case 'G':
+          analogWrite(greenPin, brightness);
+          Serial.print("GREEN : ");
+          Serial.println(brightness);
+          break;
+        case 'B':
+          analogWrite(bluePin, brightness);
+          Serial.print("BLUE : ");
+          Serial.println(brightness);
+          break;
+        }
+      }
+      rgbValue = "";
+    }
+    else rgbValue = rgbValue + rgbData;
+  }
+}
